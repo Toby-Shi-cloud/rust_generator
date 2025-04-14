@@ -5,6 +5,8 @@ use std::{
     task::{Context, Poll, Waker},
 };
 
+pub use gen_macro::generator;
+
 #[derive(Debug, Clone, Copy)]
 pub struct SuspendOnce(bool);
 

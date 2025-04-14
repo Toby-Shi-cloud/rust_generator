@@ -1,4 +1,4 @@
-#[gen_macro::generator]
+#[rust_generator::generator]
 fn fib() -> impl Iterator<Item = usize> {
     let mut n1 = 1;
     let mut n2 = 1;
