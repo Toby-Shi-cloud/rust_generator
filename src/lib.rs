@@ -1,11 +1,12 @@
 use std::{
+    future::Future,
     marker::PhantomPinned,
     mem::MaybeUninit,
     pin::Pin,
     task::{Context, Poll, Waker},
 };
 
-pub use gen_macro::generator;
+pub use rust_generator_macro::generator;
 
 #[derive(Debug, Clone, Copy)]
 pub struct SuspendOnce(bool);

@@ -1,10 +1,15 @@
 [package]
 name = "rust_generator"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
+rust-version = "1.65"
+description = "A simple generator base on async rust! No experimental needed!"
+license-file = "LICENSE"
+repository = "https://github.com/Toby-Shi-cloud/rust_generator"
 
 [workspace]
-members = ["gen_macro"]
+resolver = "2"
+members = ["macro", "example"]
 
 [dependencies]
-gen_macro = { path = "./gen_macro" }
+rust_generator_macro = { path = "macro", version = "=0.1.0" }

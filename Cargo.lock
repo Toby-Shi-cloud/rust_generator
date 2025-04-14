@@ -3,12 +3,10 @@
 version = 4
 
 [[package]]
-name = "gen_macro"
+name = "example"
 version = "0.1.0"
 dependencies = [
- "proc-macro2",
- "quote",
- "syn",
+ "rust_generator",
 ]
 
 [[package]]
@@ -33,7 +31,16 @@ dependencies = [
 name = "rust_generator"
 version = "0.1.0"
 dependencies = [
- "gen_macro",
+ "rust_generator_macro",
+]
+
+[[package]]
+name = "rust_generator_macro"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
