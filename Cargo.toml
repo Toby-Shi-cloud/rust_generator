@@ -3,4 +3,8 @@ name = "rust_generator"
 version = "0.1.0"
 edition = "2024"
 
+[workspace]
+members = ["gen_macro"]
+
 [dependencies]
+gen_macro = { path = "./gen_macro" }
