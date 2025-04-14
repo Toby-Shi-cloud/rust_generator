@@ -1,4 +1,6 @@
-use syn::{Arm, Block, Expr, FieldValue, ItemFn, Stmt, parse_quote, token};
+use quote::quote;
+use regex::Regex;
+use syn::{parse_quote, parse_str, token, Arm, Block, Expr, FieldValue, ItemFn, ReturnType, Stmt};
 
 trait InnerYield {
     fn replace_yield(&mut self);
@@ -175,13 +177,42 @@ impl InnerYield for (&mut Expr, &mut Option<token::Semi>) {
     }
 }
 
+fn get_iterator_item(output: &ReturnType) -> Option<syn::Type> {
+    match output {
+        ReturnType::Default => None,
+        ReturnType::Type(_, it) => match it.as_ref() {
+            syn::Type::ImplTrait(im) => {
+                im.bounds
+                    .iter()
+                    .find_map(|tr: &syn::TypeParamBound| match tr {
+                        syn::TypeParamBound::Trait(tb) => {
+                            Regex::new(r#"^Iterator < Item = (.*) >$"#)
+                                .unwrap()
+                                .captures(&quote!(#tb).to_string().replace("\n", " "))
+                                .and_then(|cap| cap.get(1))
+                                .and_then(|s| parse_str::<syn::Type>(s.into()).ok())
+                        }
+                        _ => None,
+                    })
+            }
+            _ => None,
+        },
+    }
+}
+
 pub fn recreate_function(ast: &mut ItemFn) {
     ast.block.replace_yield();
+    let ty = get_iterator_item(&ast.sig.output);
     let block = &ast.block;
+    let generator_new: Expr = if let Some(ty) = ty {
+        parse_quote!(::rust_generator::Generator::<#ty, _>::new())
+    } else {
+        parse_quote!(::rust_generator::Generator::new())
+    };
     *ast.block = parse_quote! {
         {
             unsafe {
-                let mut __private_generator = Box::new(::rust_generator::Generator::new());
+                let mut __private_generator = Box::new(#generator_new);
                 let __private_state_ptr = __private_generator.get_state_ptr();
                 __private_generator.set_future(Box::pin(async move {
                     #block
